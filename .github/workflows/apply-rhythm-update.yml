@@ -1,0 +1,39 @@
+name: Apply Rhythm Archive update
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-rhythm-update.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply staged patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .rhythm-update/01.patch .rhythm-update/02.patch .rhythm-update/03.patch .rhythm-update/04.patch .rhythm-update/05.patch > /tmp/rhythm-update.patch
+          patch -p0 < /tmp/rhythm-update.patch
+          actual="$(git hash-object index.html)"
+          expected="fddde5b1e90efcebc0fe5d4515274b35ec2e6f27"
+          echo "index.html blob: $actual"
+          test "$actual" = "$expected"
+      - name: Commit updated web app
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -r .rhythm-update
+          git rm .github/workflows/apply-rhythm-update.yml
+          git add index.html
+          git commit -m "Add SDVX and Taiko modules"
+          git push
