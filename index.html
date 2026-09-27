@@ -3,7 +3,14 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Rhythm Archive · 종합 리듬게임 전적</title>
+<title>Rhythm Archive · 종합 리듬게임 전적</title>\n<meta name="theme-color" content="#121a2d" />
+<meta name="application-name" content="Rhythm Archive" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Rhythm Archive" />
+<link rel="manifest" href="./manifest.webmanifest" />
+<link rel="apple-touch-icon" href="./icons/icon-192.png" />
 <style>
   :root{--bg:#0b1020;--panel:#121a2d;--panel2:#18223a;--line:#293653;--text:#f4f7ff;--muted:#9daccc;--accent:#7ee7ff;--ok:#7ee787;--warn:#ffd166;--danger:#ff7b8b;--shadow:0 16px 40px rgba(0,0,0,.25)}
   *{box-sizing:border-box}html,body{margin:0;background:linear-gradient(180deg,#09101e,#0b1020 22%,#0d1425);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -103,7 +110,13 @@
   @media(max-width:900px){.moduleToolbar{grid-template-columns:repeat(3,1fr)}.moduleToolbar .field:first-child{grid-column:span 2}.moduleStats{grid-template-columns:repeat(3,1fr)}.moduleSummaryGrid{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:580px){.gameModule{padding:12px}.moduleToolbar{grid-template-columns:repeat(2,1fr)}.moduleToolbar .field:first-child{grid-column:1/-1}.moduleStats{grid-template-columns:repeat(2,1fr)}.moduleCardGrid{grid-template-columns:1fr 1fr;gap:7px}.moduleSong{padding:9px}.moduleTitle{font-size:12px}.moduleScore{font-size:15px}.moduleLevel{font-size:18px}.moduleAnalysisGrid,.moduleSummaryGrid{grid-template-columns:1fr}.radarBars{grid-template-columns:repeat(2,1fr)}}
 
-</style>
+
+  /* PWA install / update */
+  .pwaBtn{display:none;border:1px solid #35506f;background:#152640;color:#dff8ff;border-radius:12px;padding:9px 12px;font-weight:900;white-space:nowrap}
+  .pwaBtn.show{display:inline-flex;align-items:center;gap:6px}.pwaBtn.update{border-color:#6f58b7;background:#2a2148;color:#eee7ff}
+  .pwaBtn:active{transform:translateY(1px)}
+  @media(max-width:620px){.pwaBtn{padding:9px 11px}}
+\n</style>
 </head>
 <body>
 
@@ -114,7 +127,7 @@
   <button class="gameBtn" data-game="chuni">CHUNITHM</button>
   <button class="gameBtn" data-game="sdvx">SOUND VOLTEX</button>
   <button class="gameBtn" data-game="taiko">태고의 달인</button>
-  <button id="themeToggle" class="themeBtn" type="button" aria-label="테마 전환">🌙 어둡게</button>
+  <button id="themeToggle" class="themeBtn" type="button" aria-label="테마 전환">🌙 어둡게</button>\n  <button id="pwaActionBtn" class="pwaBtn" type="button" aria-label="Rhythm Archive 설치">📲 설치</button>
 </div></div>
 <section id="hubApp" class="gameShell">
   <div class="hubApp">
@@ -976,5 +989,73 @@ $('taikoEditCancel').onclick=()=>$('taikoEditDialog').close();$('taikoEditSave')
 <script>
 (()=>{const K='rhythm-hub:theme',b=document.getElementById('themeToggle');function apply(t){const light=t!=='dark';document.documentElement.classList.toggle('light',light);document.body.classList.toggle('light',light);if(b){b.textContent=light?'🌙 어둡게':'☀️ 밝게';b.setAttribute('aria-label',light?'어두운 테마로 전환':'밝은 테마로 전환')}}let t=localStorage.getItem(K)||'light';apply(t);b?.addEventListener('click',()=>{t=document.body.classList.contains('light')?'dark':'light';localStorage.setItem(K,t);apply(t)})})();
 </script>
-</body>
+<script>
+(()=>{
+  const btn=document.getElementById('pwaActionBtn');
+  if(!btn || !('serviceWorker' in navigator)) return;
+
+  let deferredPrompt=null;
+  let waitingWorker=null;
+  let reloading=false;
+
+  const standalone=()=>window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true;
+  const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent);
+
+  const hide=()=>{btn.classList.remove('show','update');btn.textContent='📲 설치';btn.dataset.mode='';};
+  const showInstall=()=>{if(standalone()) return hide();btn.classList.add('show');btn.classList.remove('update');btn.textContent='📲 설치';btn.dataset.mode='install';};
+  const showUpdate=worker=>{waitingWorker=worker;btn.classList.add('show','update');btn.textContent='↻ 업데이트';btn.dataset.mode='update';};
+
+  window.addEventListener('beforeinstallprompt',e=>{
+    e.preventDefault();
+    deferredPrompt=e;
+    showInstall();
+  });
+
+  window.addEventListener('appinstalled',()=>{
+    deferredPrompt=null;
+    hide();
+  });
+
+  btn.addEventListener('click',async()=>{
+    if(btn.dataset.mode==='update' && waitingWorker){
+      btn.textContent='업데이트 중…';
+      waitingWorker.postMessage({type:'SKIP_WAITING'});
+      return;
+    }
+    if(deferredPrompt){
+      deferredPrompt.prompt();
+      try{await deferredPrompt.userChoice;}catch{}
+      deferredPrompt=null;
+      if(standalone()) hide();
+      return;
+    }
+    if(isIOS() && !standalone()){
+      alert('Safari의 공유 버튼 → “홈 화면에 추가”를 누르면 설치형 웹으로 사용할 수 있습니다.');
+    }
+  });
+
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    if(reloading) return;
+    reloading=true;
+    location.reload();
+  });
+
+  navigator.serviceWorker.register('./sw.js',{scope:'./'}).then(reg=>{
+    if(reg.waiting) showUpdate(reg.waiting);
+
+    reg.addEventListener('updatefound',()=>{
+      const worker=reg.installing;
+      if(!worker) return;
+      worker.addEventListener('statechange',()=>{
+        if(worker.state==='installed' && navigator.serviceWorker.controller) showUpdate(worker);
+      });
+    });
+
+    // GitHub Pages 탭을 오래 열어둔 경우에도 새 배포를 확인.
+    setInterval(()=>reg.update().catch(()=>{}), 60*60*1000);
+  }).catch(err=>console.warn('PWA service worker registration failed:',err));
+
+  if(isIOS() && !standalone()) showInstall();
+})();
+</script>\n</body>
 </html>
