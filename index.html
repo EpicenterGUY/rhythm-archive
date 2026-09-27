@@ -3,13 +3,15 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Rhythm Archive · 종합 리듬게임 전적</title>\n<meta name="theme-color" content="#121a2d" />
+<title>Rhythm Archive · 종합 리듬게임 전적</title>
+<meta name="theme-color" content="#121a2d" />
 <meta name="application-name" content="Rhythm Archive" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Rhythm Archive" />
 <link rel="manifest" href="./manifest.webmanifest" />
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="./icons/icon-192.png" />
 <style>
   :root{--bg:#0b1020;--panel:#121a2d;--panel2:#18223a;--line:#293653;--text:#f4f7ff;--muted:#9daccc;--accent:#7ee7ff;--ok:#7ee787;--warn:#ffd166;--danger:#ff7b8b;--shadow:0 16px 40px rgba(0,0,0,.25)}
@@ -67,21 +69,26 @@
 
   /* Rhythm Archive shell */
   .gameNavWrap{position:sticky;top:0;z-index:1000;background:rgba(7,12,24,.92);backdrop-filter:blur(16px);border-bottom:1px solid #263454}
-  .gameNav{max-width:1500px;margin:auto;padding:9px 16px;display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none}.gameNav::-webkit-scrollbar{display:none}
-  .brandMini{font-weight:950;letter-spacing:-.03em;margin-right:8px;white-space:nowrap}.brandMini span{color:#7ee7ff}
-  .gameBtn{border:1px solid #2b395b;background:#121b31;color:#a9b8d7;border-radius:12px;padding:9px 13px;font-weight:850;white-space:nowrap}.gameBtn:hover{border-color:#4f6d9f;color:white}.gameBtn.active{background:#233558;border-color:#72dbff;color:white;box-shadow:0 0 0 1px #72dbff22 inset}
+  .gameNav{max-width:1500px;margin:auto;padding:9px 16px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:9px}
+  .gameNavScroller{min-width:0;display:flex;align-items:center;gap:8px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding:1px}.gameNavScroller::-webkit-scrollbar{display:none}
+  .navTools{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+  .brandMini{font-weight:950;letter-spacing:-.03em;margin-right:4px;white-space:nowrap}.brandMini span{color:#7ee7ff}
+  .gameBtn{border:1px solid #2b395b;background:#121b31;color:#a9b8d7;border-radius:12px;padding:9px 13px;font-weight:850;white-space:nowrap;display:inline-flex;align-items:center;gap:7px;flex:0 0 auto}.gameBtn:hover{border-color:#4f6d9f;color:white}.gameBtn.active{background:#233558;border-color:#72dbff;color:white;box-shadow:0 0 0 1px #72dbff22 inset}
+  .gameIcon{width:16px;height:16px;display:inline-grid;place-items:center;font-size:14px;line-height:1;color:#7ee7ff;font-weight:950}.gameBtn.active .gameIcon{color:#fff}
   .gameBtn.future{opacity:.72}.gameShell{display:none}.gameShell.active{display:block}
   .hubApp{max-width:1500px;margin:auto;padding:22px 20px 60px}.hubHero{padding:28px 0 18px}.hubHero h1{font-size:clamp(30px,5vw,54px);margin:0;letter-spacing:-.055em}.hubHero p{color:#9daccc;margin:9px 0 0;font-size:15px}.hubGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.hubCard{background:#121a2d;border:1px solid #293653;border-radius:18px;padding:18px;min-height:190px;box-shadow:var(--shadow);position:relative;overflow:hidden}.hubCard:before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,#72dcff,#9a83ff)}.hubCard h2{margin:0 0 4px;font-size:20px}.hubCard .gameSub{color:#8fa1c4;font-size:12px}.hubBig{font-size:32px;font-weight:950;margin:20px 0 3px;letter-spacing:-.035em}.hubMeta{font-size:12px;color:#9cafcf;line-height:1.6}.hubCard .btn{margin-top:14px}.coming{display:inline-flex;padding:4px 8px;border-radius:999px;background:#2b3148;color:#b6c0d9;font-size:10px;font-weight:900}.roadmap{margin-top:15px;padding:18px}.roadmapRow{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #202c46}.roadmapRow:last-child{border-bottom:0}.roadmapGame{width:110px;font-weight:900}.roadmapText{color:#9aacca;font-size:12px;line-height:1.55}
   /* CHUNITHM */
   #chuniApp{max-width:1500px;margin:auto;padding:20px}.chuniAccent{color:#ffd65e}.chuniTabs{display:flex;gap:8px;margin:0 0 14px;overflow-x:auto}.chuniTab{border:1px solid #33405d;background:#141c2d;color:#9eadc8;border-radius:11px;padding:9px 14px;font-weight:850;white-space:nowrap}.chuniTab.active{background:#443c1c;border-color:#e2bb42;color:#fff4bf}.chuniView{display:none}.chuniView.active{display:block}.chuniToolbar{display:grid;grid-template-columns:minmax(180px,2fr) repeat(6,minmax(100px,1fr));gap:10px;padding:14px}.chuniToolbar .actions{grid-column:1/-1}.chuniStats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:12px 0}.chuniCardGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:11px}.chuniSong{background:#121a2d;border:1px solid #293653;border-radius:15px;padding:13px;position:relative}.chuniSong.played{border-color:#556783}.chuniSong.sss{box-shadow:0 0 0 1px #f4cc6428 inset}.chuniSong.sssp{border-color:#f1d465;background:linear-gradient(145deg,#211e19,#121a2d 55%)}.chuniSong.aj{box-shadow:0 0 0 2px #f7df83 inset}.chuniSong.rk-a{background:linear-gradient(145deg,rgba(49,105,67,.28),#121a2d 72%)}.chuniSong.rk-s{background:linear-gradient(145deg,rgba(34,108,139,.30),#121a2d 72%)}.chuniSong.rk-sp{background:linear-gradient(145deg,rgba(40,126,157,.35),#121a2d 72%)}.chuniSong.rk-ss{background:linear-gradient(145deg,rgba(85,67,142,.33),#121a2d 72%)}.chuniSong.rk-ssp{background:linear-gradient(145deg,rgba(112,73,162,.37),#121a2d 72%)}.chuniSong.rk-sss{background:linear-gradient(145deg,rgba(139,106,34,.36),#121a2d 72%)}.chuniSong.rk-sssp,.chuniSong.rk-max{background:linear-gradient(145deg,rgba(144,86,25,.42),#121a2d 72%);border-color:#d0af4d}.chuniSong.rk-low{background:linear-gradient(145deg,rgba(60,87,70,.20),#121a2d 72%)}.chuniSongTop{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.chuniDs{font-size:22px;font-weight:950;color:#ffd65e}.chuniDiff{font-size:10px;font-weight:950;padding:3px 7px;border-radius:999px;background:#293653;color:#dce6fa}.chuniTitle{font-weight:900;margin-top:8px;line-height:1.25}.chuniTitle a{color:inherit;text-decoration:none}.chuniTitle a:hover{color:#7ee7ff}.chuniArtist{font-size:11px;color:#8395b9;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chuniScore{font-size:22px;font-weight:950;margin-top:12px;letter-spacing:-.025em}.chuniBadges{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.cBadge{font-size:9px;font-weight:900;padding:3px 6px;border-radius:999px;background:#25314c;color:#b8c7e3}.cBadge.gold{background:#4a3d13;color:#ffe58c}.cBadge.aj{background:#29492e;color:#a9ffb5}.chuniMinor{font-size:10px;color:#8396bb;margin-top:8px}.chuniSummaryGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.chuniBox{background:#121a2d;border:1px solid #293653;border-radius:16px;padding:16px}.chuniBox h2{margin:0 0 5px;font-size:17px}.chuniBoxSub{color:#8fa1c4;font-size:11px}.chuniMetric{font-size:30px;font-weight:950;margin-top:14px}.chuniMetricSmall{font-size:13px;color:#a7b6d3;margin-top:5px}.chuniRankTable{width:100%;border-collapse:collapse;font-size:12px}.chuniRankTable th,.chuniRankTable td{padding:8px;border-bottom:1px solid #202c46;text-align:left}.chuniRankTable th{position:sticky;top:0;background:#121a2d;color:#8799bb}.chuniRankTable .num{text-align:right;font-variant-numeric:tabular-nums}.chuniAnalysisGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.traitList .traitRow{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid #202c46}.traitList .traitRow:last-child{border:0}.pos{color:#8cf09a}.neg{color:#ff8b9b}.chuniCode{width:100%;min-height:96px;background:#080d18;color:#bde9ff;border:1px solid #35476b;border-radius:10px;padding:10px;font:11px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace;resize:vertical}.chartTraits{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.traitChip{font-size:9px;font-weight:900;padding:3px 6px;border-radius:999px;border:1px solid #31405f;background:#172238;color:#b9c8e6;white-space:nowrap}.traitChip.hot{background:#40231f;border-color:#6d3b31;color:#ffb5a8}.traitChip.tech{background:#1c3044;border-color:#315471;color:#a9dcff}.traitChip.note{background:#322b16;border-color:#62552a;color:#f5dd89}.traitChip.special{background:#32203e;border-color:#5b3970;color:#e3b6ff}.chartFeatureBox{grid-column:1/-1;border:1px solid #2c3b58;background:#0b1322;border-radius:12px;padding:12px}.chartFeatureTitle{font-size:12px;font-weight:950;margin-bottom:8px}.chartFeatureSummary{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.noteBreakdown{display:grid;grid-template-columns:repeat(5,minmax(74px,1fr));gap:7px}.noteCell{background:#111b2e;border:1px solid #263654;border-radius:9px;padding:8px;text-align:center}.noteCell b{display:block;font-size:13px}.noteCell span{font-size:9px;color:#8193b4}.featureExplain{margin-top:9px;font-size:10px;line-height:1.55;color:#8fa1c0}.featureExplain b{color:#dce8ff}.chartReview{margin:10px 0 11px;padding:11px 12px;border-radius:10px;background:#101a2d;border:1px solid #2d3f61;font-size:11px;line-height:1.65;color:#c8d5ec}.chartReview b{color:#fff}.chartReview .reviewNote{display:block;margin-top:5px;color:#8193b5;font-size:9px}.chuniFeatureBox .chartReview{background:#201d10;border-color:#594c22;color:#eadfa7}.chuniFeatureBox .chartReview b{color:#fff2b9}.chuniFeatureBox .chartReview .reviewNote{color:#a99b60}.chuniFeatureBox{grid-column:1/-1;border:1px solid #51451e;background:#17150d;border-radius:12px;padding:12px}.chuniFeatureBox .noteCell{background:#1b190f;border-color:#4b4222}.chuniFeatureBox .featureExplain{color:#b4a974}.chuniFeatureBox .featureExplain b{color:#fff0b1}.futureApp{max-width:1000px;margin:35px auto;padding:20px}.futurePanel{padding:26px}.futurePanel h1{margin:0 0 8px}.futureFeatures{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px}.futureFeature{background:#10182a;border:1px solid #293653;border-radius:13px;padding:14px}.futureFeature b{display:block;margin-bottom:4px}.futureFeature span{color:#8fa1c4;font-size:12px;line-height:1.55}
   @media(max-width:1050px){.hubGrid{grid-template-columns:1fr 1fr}.chuniToolbar{grid-template-columns:1fr 1fr 1fr}.chuniToolbar .actions{grid-column:1/-1}.chuniSummaryGrid{grid-template-columns:1fr 1fr}}
-  @media(max-width:720px){.noteBreakdown{grid-template-columns:repeat(3,1fr)}.gameNav{padding:8px}.brandMini{display:none}.hubApp,#chuniApp{padding:12px}.hubGrid{grid-template-columns:1fr}.chuniToolbar{grid-template-columns:1fr 1fr}.chuniStats{grid-template-columns:1fr 1fr 1fr}.chuniSummaryGrid,.chuniAnalysisGrid{grid-template-columns:1fr}.futureFeatures{grid-template-columns:1fr}.hubHero{padding-top:16px}.hubCard{min-height:160px}}
-  .themeBtn{margin-left:auto;height:34px;padding:0 11px;border-radius:10px;border:1px solid #354564;background:#111a2e;color:#dce7ff;font-weight:850;white-space:nowrap}
-  .themeBtn:hover{filter:brightness(1.06)}
+  @media(max-width:720px){.noteBreakdown{grid-template-columns:repeat(3,1fr)}.gameNav{padding:8px;grid-template-columns:minmax(0,1fr) auto}.brandMini{display:none}.hubApp,#chuniApp{padding:12px}.hubGrid{grid-template-columns:1fr}.chuniToolbar{grid-template-columns:1fr 1fr}.chuniStats{grid-template-columns:1fr 1fr 1fr}.chuniSummaryGrid,.chuniAnalysisGrid{grid-template-columns:1fr}.futureFeatures{grid-template-columns:1fr}.hubHero{padding-top:16px}.hubCard{min-height:160px}}
+  .themeBtn{height:38px;border-radius:11px;border:1px solid #354564;background:#111a2e;color:#dce7ff;font-weight:850}
+  .navToolBtn{width:38px;min-width:38px;padding:0;display:inline-grid;place-items:center}
+  .navToolIcon{font-size:19px;line-height:1;font-family:system-ui,-apple-system,"Segoe UI Symbol",sans-serif}
+  .themeBtn:hover,.pwaBtn:hover{filter:brightness(1.06)}
   html.light,body.light{background:#f3f6fb;color:#172033}
   body.light{--bg:#f3f6fb;--panel:#fff;--panel2:#f7f9fd;--line:#d8e0eb;--text:#172033;--muted:#6f7f98;--accent:#167f9f;--ok:#21844a;--warn:#b77b00;--danger:#c94559;--shadow:0 12px 32px rgba(34,48,73,.09);background:linear-gradient(180deg,#f8fbff,#f2f6fb 30%,#eef3f9)}
   body.light .gameNavWrap{background:rgba(255,255,255,.94);border-bottom-color:#dbe3ee;box-shadow:0 4px 18px rgba(35,51,77,.05)}
-  body.light .brandMini{color:#172033}body.light .gameBtn{background:#f7f9fc;border-color:#dbe3ee;color:#60708b}body.light .gameBtn.active{background:#172033;border-color:#172033;color:white}body.light .themeBtn{background:#fff;border-color:#d8e0eb;color:#34445f}
+  body.light .brandMini{color:#172033}body.light .gameBtn{background:#f7f9fc;border-color:#dbe3ee;color:#60708b}body.light .gameBtn.active{background:#172033;border-color:#172033;color:white}body.light .themeBtn,body.light .pwaBtn{background:#fff;border-color:#d8e0eb;color:#34445f}
   body.light .hero p,body.light .hubHero p,body.light .hubMeta,body.light .gameSub,body.light .boxSub,body.light .chuniBoxSub,body.light .source,body.light .sub,body.light .miniMeta,body.light .recommendSub,body.light .recommendReason,body.light .featureExplain,body.light .chuniArtist,body.light .chuniMinor,body.light .futureFeature span{color:#6f809b}
   body.light .panel,body.light .stat,body.light .box,body.light .dashCard,body.light .hubCard,body.light .recommendBox,body.light .chuniBox,body.light .futurePanel,body.light .futureFeature{background:#fff;border-color:#d8e0eb;color:#172033}
   body.light .toolbar,body.light .tabs{background:rgba(255,255,255,.94);border-color:#d8e0eb}
@@ -112,22 +119,26 @@
 
 
   /* PWA install / update */
-  .pwaBtn{display:none;border:1px solid #35506f;background:#152640;color:#dff8ff;border-radius:12px;padding:9px 12px;font-weight:900;white-space:nowrap}
-  .pwaBtn.show{display:inline-flex;align-items:center;gap:6px}.pwaBtn.update{border-color:#6f58b7;background:#2a2148;color:#eee7ff}
+  .pwaBtn{display:none;border:1px solid #35506f;background:#152640;color:#dff8ff;border-radius:11px;font-weight:900;white-space:nowrap}
+  .pwaBtn.show{display:inline-grid;place-items:center}.pwaBtn.update{border-color:#6f58b7;background:#2a2148;color:#eee7ff}
   .pwaBtn:active{transform:translateY(1px)}
-  @media(max-width:620px){.pwaBtn{padding:9px 11px}}
-\n</style>
+</style>
 </head>
 <body>
 
 <div class="gameNavWrap"><div class="gameNav">
   <div class="brandMini">RHYTHM <span>ARCHIVE</span></div>
-  <button class="gameBtn" data-game="home">전체</button>
-  <button class="gameBtn active" data-game="maimai">maimai DX</button>
-  <button class="gameBtn" data-game="chuni">CHUNITHM</button>
-  <button class="gameBtn" data-game="sdvx">SOUND VOLTEX</button>
-  <button class="gameBtn" data-game="taiko">태고의 달인</button>
-  <button id="themeToggle" class="themeBtn" type="button" aria-label="테마 전환">🌙 어둡게</button>\n  <button id="pwaActionBtn" class="pwaBtn" type="button" aria-label="Rhythm Archive 설치">📲 설치</button>
+  <div class="gameNavScroller" aria-label="게임 선택">
+    <button class="gameBtn" data-game="home"><span class="gameIcon" aria-hidden="true">⌂</span><span>전체</span></button>
+    <button class="gameBtn active" data-game="maimai"><span class="gameIcon" aria-hidden="true">◎</span><span>maimai DX</span></button>
+    <button class="gameBtn" data-game="chuni"><span class="gameIcon" aria-hidden="true">◇</span><span>CHUNITHM</span></button>
+    <button class="gameBtn" data-game="sdvx"><span class="gameIcon" aria-hidden="true">⌁</span><span>SOUND VOLTEX</span></button>
+    <button class="gameBtn" data-game="taiko"><span class="gameIcon" aria-hidden="true">●</span><span>태고의 달인</span></button>
+  </div>
+  <div class="navTools">
+    <button id="themeToggle" class="themeBtn navToolBtn" type="button" aria-label="테마 전환" title="테마 전환"><span class="navToolIcon" aria-hidden="true">☾</span></button>
+    <button id="pwaActionBtn" class="pwaBtn navToolBtn" type="button" aria-label="Rhythm Archive 설치" title="설치"><span class="navToolIcon" aria-hidden="true">⇩</span></button>
+  </div>
 </div></div>
 <section id="hubApp" class="gameShell">
   <div class="hubApp">
@@ -987,7 +998,7 @@ $('taikoEditCancel').onclick=()=>$('taikoEditDialog').close();$('taikoEditSave')
 })();
 </script>
 <script>
-(()=>{const K='rhythm-hub:theme',b=document.getElementById('themeToggle');function apply(t){const light=t!=='dark';document.documentElement.classList.toggle('light',light);document.body.classList.toggle('light',light);if(b){b.textContent=light?'🌙 어둡게':'☀️ 밝게';b.setAttribute('aria-label',light?'어두운 테마로 전환':'밝은 테마로 전환')}}let t=localStorage.getItem(K)||'light';apply(t);b?.addEventListener('click',()=>{t=document.body.classList.contains('light')?'dark':'light';localStorage.setItem(K,t);apply(t)})})();
+(()=>{const K='rhythm-hub:theme',b=document.getElementById('themeToggle'),i=b?.querySelector('.navToolIcon');function apply(t){const light=t!=='dark';document.documentElement.classList.toggle('light',light);document.body.classList.toggle('light',light);if(b){if(i)i.textContent=light?'☾':'☀︎';const a=light?'어두운 테마로 전환':'밝은 테마로 전환';b.setAttribute('aria-label',a);b.title=a}}let t=localStorage.getItem(K)||'light';apply(t);b?.addEventListener('click',()=>{t=document.body.classList.contains('light')?'dark':'light';localStorage.setItem(K,t);apply(t)})})();
 </script>
 <script>
 (()=>{
@@ -1001,9 +1012,10 @@ $('taikoEditCancel').onclick=()=>$('taikoEditDialog').close();$('taikoEditSave')
   const standalone=()=>window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true;
   const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent);
 
-  const hide=()=>{btn.classList.remove('show','update');btn.textContent='📲 설치';btn.dataset.mode='';};
-  const showInstall=()=>{if(standalone()) return hide();btn.classList.add('show');btn.classList.remove('update');btn.textContent='📲 설치';btn.dataset.mode='install';};
-  const showUpdate=worker=>{waitingWorker=worker;btn.classList.add('show','update');btn.textContent='↻ 업데이트';btn.dataset.mode='update';};
+  const setIcon=(txt,label)=>{const x=btn.querySelector('.navToolIcon');if(x)x.textContent=txt;else btn.textContent=txt;btn.setAttribute('aria-label',label);btn.title=label;};
+  const hide=()=>{btn.classList.remove('show','update');setIcon('⇩','Rhythm Archive 설치');btn.dataset.mode='';};
+  const showInstall=()=>{if(standalone()) return hide();btn.classList.add('show');btn.classList.remove('update');setIcon('⇩','Rhythm Archive 설치');btn.dataset.mode='install';};
+  const showUpdate=worker=>{waitingWorker=worker;btn.classList.add('show','update');setIcon('↻','새 버전 업데이트');btn.dataset.mode='update';};
 
   window.addEventListener('beforeinstallprompt',e=>{
     e.preventDefault();
@@ -1018,7 +1030,7 @@ $('taikoEditCancel').onclick=()=>$('taikoEditDialog').close();$('taikoEditSave')
 
   btn.addEventListener('click',async()=>{
     if(btn.dataset.mode==='update' && waitingWorker){
-      btn.textContent='업데이트 중…';
+      setIcon('↻','업데이트 적용 중');
       waitingWorker.postMessage({type:'SKIP_WAITING'});
       return;
     }
@@ -1057,5 +1069,6 @@ $('taikoEditCancel').onclick=()=>$('taikoEditDialog').close();$('taikoEditSave')
 
   if(isIOS() && !standalone()) showInstall();
 })();
-</script>\n</body>
+</script>
+</body>
 </html>
