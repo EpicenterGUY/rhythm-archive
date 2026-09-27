@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'rhythm-archive-v1-20260927';
+const CACHE_VERSION = 'rhythm-archive-v2-20260927';
 const APP_SHELL = [
   './',
   './index.html',
