@@ -398,6 +398,8 @@
   function titleSig(s){return normTitle(s).replace(/[\s・･·\.。!！?？'’"“”`´~〜～:：;；,，、()（）\[\]【】{}「」『』〈〉《》<>_\-—–]/g,'')}
   const GENRE_LABELS={'POPS＆アニメ':'POPS & 애니메','niconico＆ボーカロイド':'niconico & 보컬로이드','東方Project':'동방 Project','ゲーム＆バラエティ':'게임 & 버라이어티','maimai':'maimai','オンゲキ＆CHUNITHM':'온게키 & CHUNITHM'};
   function genreLabel(g){const x=String(g||'').trim();return GENRE_LABELS[x]||x||'기타'}
+  function intlDateState(date,listed=false){const d=String(date||'').slice(0,10);if(listed){if(/^\d{4}-\d{2}-\d{2}$/.test(d)&&d>new Date().toISOString().slice(0,10))return'upcoming';return'intl'}return'jp-only'}
+  function regionTagHTML(c){const st=c&&c.regionStatus?c.regionStatus:'unknown',label=st==='intl'?'INTL':st==='jp-only'?'JP ONLY':st==='upcoming'?'INTL 예정':'지역 미확인',cls=st==='jp-only'?'jp':st,title=(st==='upcoming'&&c.dateIntl)?('국제판 예정: '+String(c.dateIntl).slice(0,10)):(st==='intl'&&c.dateIntl)?('국제판 수록: '+String(c.dateIntl).slice(0,10)):label;return '<span class="regionTag '+cls+'" title="'+esc(title)+'">'+label+'</span>'}
   function youtubeUrl(c){const q=['maimai',c.title,DIFF[c.idx],c.type==='DX'?'DX':'STANDARD'].filter(Boolean).join(' ');return 'https://www.youtube.com/results?search_query='+encodeURIComponent(q)}
   function communityFor(c){return communityStats.get(keyOf(c.title,c.type,c.idx))||null}
   function communityRate(st,kind){if(!st||!Number.isFinite(st.cnt)||st.cnt<=0)return null;const d=Array.isArray(st.dist)?st.dist:[],f=Array.isArray(st.fcDist)?st.fcDist:[];if(kind==='sssp')return 100*(Number(d[13])||0)/st.cnt;if(kind==='sss')return 100*((Number(d[12])||0)+(Number(d[13])||0))/st.cnt;if(kind==='fc')return 100*f.slice(1).reduce((a,b)=>a+(Number(b)||0),0)/st.cnt;if(kind==='ap')return 100*((Number(f[3])||0)+(Number(f[4])||0))/st.cnt;return null}
@@ -487,14 +489,23 @@
   }
 
   async function loadMusic(force=false){
-    setStatus('최신 국제판 상수표 불러오는 중','loading');
-    if(!force&&charts.length){refreshDynamicFilters();setStatus(`저장된 상수표 ${charts.length.toLocaleString()}채보`,'ok');render()}
+    setStatus('일본판·국제판 상수표 불러오는 중','loading');
+    if(!force&&charts.length){refreshDynamicFilters();setStatus('저장된 합본 상수표 '+charts.length.toLocaleString()+'채보','ok');render()}
     try{
-      const res=await fetch(MUSIC_URL,{cache:force?'no-store':'default'});if(!res.ok)throw new Error(`HTTP ${res.status}`);
-      const data=normalizeOtoge(await res.json());if(!data.length)throw new Error('상수 데이터가 비어 있습니다.');charts=data;localStorage.setItem(STORAGE_MUSIC,JSON.stringify(charts));refreshDynamicFilters();
-      setStatus(`최신 국제판 ${charts.length.toLocaleString()}채보`,'ok');render();toast('최신 상수표를 갱신했습니다.');
+      const pair=await Promise.all([
+        fetch(MUSIC_JP_URL,{cache:force?'no-store':'default'}),
+        fetch(MUSIC_URL,{cache:force?'no-store':'default'})
+      ]),jpRes=pair[0],intlRes=pair[1];
+      if(!jpRes.ok||!intlRes.ok)throw new Error('HTTP JP '+jpRes.status+' / INTL '+intlRes.status);
+      const jp=normalizeOtoge(await jpRes.json()),intl=normalizeOtoge(await intlRes.json()),im=new Map(intl.map(c=>[keyOf(c.title,c.type,c.idx),c])),seen=new Set(),merged=[];
+      for(const j of jp){const k=keyOf(j.title,j.type,j.idx),i=im.get(k),base=i?Object.assign({},j,i):j,date=(i&&i.dateIntl)||j.dateIntl||'';merged.push(Object.assign({},base,{dateIntl:date,regionStatus:intlDateState(date,!!i)}));seen.add(k)}
+      for(const i of intl){const k=keyOf(i.title,i.type,i.idx);if(!seen.has(k))merged.push(Object.assign({},i,{regionStatus:intlDateState(i.dateIntl,true)}))}
+      charts=merged;localStorage.setItem(STORAGE_MUSIC,JSON.stringify(charts));refreshDynamicFilters();
+      const intlCount=charts.filter(c=>c.regionStatus==='intl').length,jpCount=charts.filter(c=>c.regionStatus==='jp-only').length,up=charts.filter(c=>c.regionStatus==='upcoming').length;
+      setStatus('합본 '+charts.length.toLocaleString()+'채보 · INTL '+intlCount.toLocaleString()+' · JP전용 '+jpCount.toLocaleString()+(up?' · 예정 '+up.toLocaleString():''),'ok');
+      render();toast('일본판/국제판 수록 정보를 갱신했습니다.');
     }catch(e){
-      console.warn(e);if(charts.length){setStatus(`오프라인 저장본 ${charts.length.toLocaleString()}채보`,'error');render();toast('온라인 갱신 실패 — 저장된 상수표를 사용합니다.');}
+      console.warn(e);if(charts.length){setStatus('오프라인 합본 '+charts.length.toLocaleString()+'채보','error');render();toast('온라인 갱신 실패 — 저장된 상수표를 사용합니다.');}
       else{setStatus('상수표 로드 실패','error');els.content.innerHTML='<div class="empty"><b>상수표를 불러오지 못했습니다.</b>인터넷 연결을 확인한 뒤 “최신 상수표 갱신”을 눌러 주세요.</div>'}
     }
   }
@@ -505,8 +516,8 @@
   function isFC(fc){return['fc','fcp','ap','app'].includes(String(fc))}function isAP(fc){return['ap','app'].includes(String(fc))}function fcLabel(fc){return({fc:'FC',fcp:'FC+',ap:'AP',app:'AP+'})[fc]||''}function fsLabel(fs){return({fs:'FS',fsp:'FS+',fsd:'FDX',fsdp:'FDX+'})[fs]||''}
   function passesStatus(rec,st){const a=rec?.achievements;if(st==='all')return true;if(st==='played')return a!=null;if(st==='unplayed')return a==null;if(st==='clear')return a!=null&&a>=80;if(st==='s')return a!=null&&a>=97;if(st==='ss')return a!=null&&a>=99;if(st==='sss')return a!=null&&a>=100;if(st==='sssp')return a!=null&&a>=100.5;if(st==='fc')return isFC(rec?.fc);if(st==='ap')return isAP(rec?.fc);return true}
   function filteredCharts(){
-    const q=els.search.value.trim().toLowerCase(),g=els.genre?.value||'all',d=els.difficulty.value,st=els.status.value,min=Number(els.minDs.value)||0,max=Number(els.maxDs.value)||99;
-    let arr=charts.map(c=>({...c,rec:scoreFor(c),note:noteFor(c)})).filter(c=>{if(c.ds<min-1e-9||c.ds>max+1e-9)return false;if(g!=='all'&&c.genre!==g)return false;if(q&&!c.title.toLowerCase().includes(q)&&!c.artist.toLowerCase().includes(q))return false;if(d==='master'&&c.idx!==3)return false;if(d==='remaster'&&c.idx!==4)return false;if(d==='master+remaster'&&![3,4].includes(c.idx))return false;if(st==='goal')return !!c.note.goal;return passesStatus(c.rec,st)});
+    const q=els.search.value.trim().toLowerCase(),g=els.genre?.value||'all',d=els.difficulty.value,st=els.status.value,rg=els.region?.value||'all',min=Number(els.minDs.value)||0,max=Number(els.maxDs.value)||99;
+    let arr=charts.map(c=>({...c,rec:scoreFor(c),note:noteFor(c)})).filter(c=>{if(rg!=='all'&&(c.regionStatus||'unknown')!==rg)return false;if(c.ds<min-1e-9||c.ds>max+1e-9)return false;if(g!=='all'&&c.genre!==g)return false;if(q&&!c.title.toLowerCase().includes(q)&&!c.artist.toLowerCase().includes(q))return false;if(d==='master'&&c.idx!==3)return false;if(d==='remaster'&&c.idx!==4)return false;if(d==='master+remaster'&&![3,4].includes(c.idx))return false;if(st==='goal')return !!c.note.goal;return passesStatus(c.rec,st)});
     const mode=els.sort.value;arr.sort((a,b)=>{if(mode==='ds-asc')return a.ds-b.ds||a.title.localeCompare(b.title,'ja');if(mode==='ach-desc')return(b.rec?.achievements??-1)-(a.rec?.achievements??-1)||b.ds-a.ds;if(mode==='title')return a.title.localeCompare(b.title,'ja')||b.ds-a.ds;if(mode==='same-ds-rank'){const sa=communityFor(a),sb=communityFor(b),fa=Number.isFinite(sa?.fitDiff)?sa.fitDiff:-Infinity,fb=Number.isFinite(sb?.fitDiff)?sb.fitDiff:-Infinity;return b.ds-a.ds||fb-fa||a.title.localeCompare(b.title,'ja')}return b.ds-a.ds||a.title.localeCompare(b.title,'ja')});return arr;
   }
   function traitChipHTML(t){return `<span class="traitChip ${t.kind||''}" title="${esc(t.detail||t.label)}">${esc(t.label)}</span>`}
@@ -552,7 +563,7 @@
   }
   function maiRankColorClass(a){if(a==null||!Number.isFinite(Number(a)))return'';a=Number(a);if(a>=100.5)return'rk-sssp';if(a>=100)return'rk-sss';if(a>=99.5)return'rk-ssp';if(a>=99)return'rk-ss';if(a>=98)return'rk-sp';if(a>=97)return'rk-s';if(a>=80)return'rk-a';return'rk-low'}
   function cardClass(c){const a=c.rec?.achievements;let cls='card';if(a==null)return cls;cls+=' played '+maiRankColorClass(a);if(a>=80)cls+=' clear';if(a>=97)cls+=' s';if(a>=99)cls+=' ss';if(a>=100)cls+=' sss';if(a>=100.5)cls+=' sssp';if(isAP(c.rec?.fc))cls+=' ap';return cls}
-  function cardHTML(c,groupRank=null){const r=rankOf(c.rec?.achievements),ach=c.rec?.achievements,marks=[],meta=c.note||noteFor(c);if(fcLabel(c.rec?.fc))marks.push(`<span class="mark ${isAP(c.rec?.fc)?'ap':'fc'}">${fcLabel(c.rec.fc)}</span>`);if(fsLabel(c.rec?.fs))marks.push(`<span class="mark fs">${fsLabel(c.rec.fs)}</span>`);if(groupRank!=null)marks.unshift(`<span class="mark">#${groupRank}</span>`);return `<article class="${cardClass(c)}" data-key="${esc(keyOf(c.title,c.type,c.idx))}"><div class="cardTop"><div class="tags"><span class="tag ${c.idx===4?'remaster':c.idx===3?'master':''}">${esc(DIFF[c.idx])}</span><span class="tag ${c.type==='DX'?'dx':'sd'}">${esc(c.type)}</span></div><div class="rank ${r.cls}">${r.name}</div></div><div class="title"><a class="ytLink" href="${youtubeUrl(c)}" target="_blank" rel="noopener" title="YouTube에서 이 곡 검색">${esc(c.title)}<span class="ytIcon">▶</span></a></div><div class="meta"><div><div class="ach">${ach==null?'미플레이':`${ach.toFixed(4)}%`}</div><div class="sub">${esc(genreLabel(c.genre))} · 표기 ${esc(c.level||'—')} · 상수 ${c.ds.toFixed(1)}</div>${ach!=null?`<div class="ratingMini">단곡 Rt ${chartRating(c,ach,c.rec?.fc)}</div>`:''}</div><div class="marks">${marks.join('')}</div></div><div class="chartTraits">${maiChartTraits(c).slice(0,3).map(traitChipHTML).join('')}</div>${meta.goal?'<span class="goalStar" title="목표곡">★</span>':''}${meta.memo?'<span class="memoDot" title="메모 있음"></span>':''}</article>`}
+  function cardHTML(c,groupRank=null){const r=rankOf(c.rec?.achievements),ach=c.rec?.achievements,marks=[],meta=c.note||noteFor(c);if(fcLabel(c.rec?.fc))marks.push(`<span class="mark ${isAP(c.rec?.fc)?'ap':'fc'}">${fcLabel(c.rec.fc)}</span>`);if(fsLabel(c.rec?.fs))marks.push(`<span class="mark fs">${fsLabel(c.rec.fs)}</span>`);if(groupRank!=null)marks.unshift(`<span class="mark">#${groupRank}</span>`);return `<article class="${cardClass(c)}" data-key="${esc(keyOf(c.title,c.type,c.idx))}"><div class="cardTop"><div class="tags"><span class="tag ${c.idx===4?'remaster':c.idx===3?'master':''}">${esc(DIFF[c.idx])}</span><span class="tag ${c.type==='DX'?'dx':'sd'}">${esc(c.type)}</span>${regionTagHTML(c)}</div><div class="rank ${r.cls}">${r.name}</div></div><div class="title"><a class="ytLink" href="${youtubeUrl(c)}" target="_blank" rel="noopener" title="YouTube에서 이 곡 검색">${esc(c.title)}<span class="ytIcon">▶</span></a></div><div class="meta"><div><div class="ach">${ach==null?'미플레이':`${ach.toFixed(4)}%`}</div><div class="sub">${esc(genreLabel(c.genre))} · 표기 ${esc(c.level||'—')} · 상수 ${c.ds.toFixed(1)}</div>${ach!=null?`<div class="ratingMini">단곡 Rt ${chartRating(c,ach,c.rec?.fc)}</div>`:''}</div><div class="marks">${marks.join('')}</div></div><div class="chartTraits">${maiChartTraits(c).slice(0,3).map(traitChipHTML).join('')}</div>${meta.goal?'<span class="goalStar" title="목표곡">★</span>':''}${meta.memo?'<span class="memoDot" title="메모 있음"></span>':''}</article>`}
   function renderTable(){
     document.body.classList.toggle('compact',els.compact.value==='compact');if(!charts.length)return;const arr=filteredCharts();updateStats(arr);if(!arr.length){els.content.innerHTML='<div class="empty"><b>조건에 맞는 채보가 없습니다.</b>필터 범위나 기록 상태를 바꿔 보세요.</div>';return}
     const groups=new Map();for(const c of arr){const k=c.ds.toFixed(1);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(c)}const groupKeys=[...groups.keys()];
@@ -603,7 +614,7 @@
 
 
 
-  function releasedChart(c){if(!c.dateIntl)return true;const d=String(c.dateIntl).slice(0,10);return !/^\d{4}-\d{2}-\d{2}$/.test(d)||d<=new Date().toISOString().slice(0,10)}
+  function releasedChart(c){if(c.regionStatus)return c.regionStatus==='intl';if(!c.dateIntl)return true;const d=String(c.dateIntl).slice(0,10);return !/^\d{4}-\d{2}-\d{2}$/.test(d)||d<=new Date().toISOString().slice(0,10)}
   function versionMajor(v){const n=Number(v);return Number.isFinite(n)&&n>0?Math.floor(n/100):null}
   const VERSION_NAMES={230:'FESTiVAL',235:'FESTiVAL PLUS',240:'BUDDiES',245:'BUDDiES PLUS',250:'PRiSM',255:'PRiSM PLUS',260:'CiRCLE',265:'CiRCLE PLUS'};
   function versionName(v){return VERSION_NAMES[v]||String(v||'—')}
