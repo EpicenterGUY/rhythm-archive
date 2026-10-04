@@ -122,6 +122,15 @@
   .pwaBtn{display:none;border:1px solid #35506f;background:#152640;color:#dff8ff;border-radius:11px;font-weight:900;white-space:nowrap}
   .pwaBtn.show{display:inline-grid;place-items:center}.pwaBtn.update{border-color:#6f58b7;background:#2a2148;color:#eee7ff}
   .pwaBtn:active{transform:translateY(1px)}
+
+  .regionTag{display:inline-flex;align-items:center;gap:4px;border:1px solid #3e5276;border-radius:999px;padding:3px 7px;font-size:10px;font-weight:900;letter-spacing:.03em;white-space:nowrap}
+  .regionTag.intl{border-color:#2f806b;background:rgba(50,190,142,.13);color:#8ef0cd}
+  .regionTag.jp{border-color:#8a5264;background:rgba(231,96,129,.12);color:#ffafc3}
+  .regionTag.upcoming{border-color:#8a743f;background:rgba(255,198,80,.12);color:#ffe09a}
+  .regionTag.unknown{border-color:#56627b;background:rgba(130,145,175,.10);color:#bac5dc}
+  body.light .regionTag.intl{color:#13755d;background:rgba(30,170,120,.10)}
+  body.light .regionTag.jp{color:#a23d5b;background:rgba(220,70,110,.09)}
+  body.light .regionTag.upcoming{color:#8b680f;background:rgba(220,165,35,.10)}
 </style>
 </head>
 <body>
@@ -172,6 +181,7 @@
     <div class="field genre"><label>장르</label><select id="genre"><option value="all">전체 장르</option></select></div>
     <div class="field difficulty"><label>난이도</label><select id="difficulty"><option value="master+remaster">MASTER + Re:MASTER</option><option value="master">MASTER</option><option value="remaster">Re:MASTER</option><option value="all">전 난이도</option></select></div>
     <div class="field statusFilter"><label>달성 상태</label><select id="statusFilter"><option value="all">전체</option><option value="played">플레이함</option><option value="unplayed">미플레이</option><option value="clear">CLEAR 이상</option><option value="s">S 이상</option><option value="ss">SS 이상</option><option value="sss">SSS 이상</option><option value="sssp">SSS+ 이상</option><option value="fc">FC 이상</option><option value="ap">AP 이상</option><option value="goal">목표곡만</option></select></div>
+    <div class="field"><label>판본</label><select id="regionFilter"><option value="all">전체 (JP+INTL)</option><option value="intl">국제판 수록</option><option value="jp-only">일본판 전용</option><option value="upcoming">국제판 출시 예정</option></select></div>
     <div class="field minDs"><label>최소 상수</label><input id="minDs" type="number" step="0.1" min="1" max="15.9" value="12.0" /></div>
     <div class="field maxDs"><label>최대 상수</label><input id="maxDs" type="number" step="0.1" min="1" max="15.9" value="15.9" /></div>
     <div class="field sort"><label>정렬</label><select id="sort"><option value="ds-desc">상수 높은 순</option><option value="ds-asc">상수 낮은 순</option><option value="ach-desc">달성률 높은 순</option><option value="title">곡명 순</option><option value="same-ds-rank">상수 내 체감난도순</option></select></div>
@@ -196,7 +206,7 @@
 
   <div class="panel notice">
     <strong>사용법:</strong> <b>DX NET 기록 가져오기</b> → 수집 북마클릿을 등록 → maimai DX NET에 로그인한 상태에서 실행 → 생성된 기록을 복사 → 이 페이지에 붙여넣으면 자동으로 체크됩니다. 계정 비밀번호나 토큰은 이 파일에 입력하지 않습니다.
-    <div class="source">상수 데이터: OTOGE DB International · 체감 난이도: SaltMeta fitDiffDF 공개 집계 통계 · 개인 성적: 사용자의 maimai DX NET 세션에서 직접 읽은 텍스트만 로컬 저장</div>
+    <div class="source">상수 데이터: OTOGE DB 일본판+International 합본 · 판본 구분: OTOGE DB 국제판 수록 데이터 · 체감 난이도: SaltMeta fitDiffDF 공개 집계 통계 · 개인 성적: 사용자의 maimai DX NET 세션에서 직접 읽은 텍스트만 로컬 저장</div>
   </div>
   <main id="content"><div class="empty"><b>상수표를 불러오는 중…</b>최신 국제판 내부상수를 확인하고 있습니다.</div></main>
   </section>
@@ -234,6 +244,7 @@
       <div class="field"><label>장르</label><select id="chuniGenre"><option value="all">전체 장르</option></select></div>
       <div class="field"><label>난이도</label><select id="chuniDiff"><option value="MAS+ULT">MASTER + ULTIMA</option><option value="MAS">MASTER</option><option value="ULT">ULTIMA</option><option value="all">전 난이도</option></select></div>
       <div class="field"><label>상태</label><select id="chuniStatus"><option value="all">전체</option><option value="played">플레이함</option><option value="unplayed">미플레이</option><option value="sss">SSS 이상</option><option value="sssp">SSS+ 이상</option><option value="fc">FC 이상</option><option value="aj">AJ</option><option value="goal">목표곡만</option></select></div>
+      <div class="field"><label>판본</label><select id="chuniRegion"><option value="all">전체 (JP+INTL)</option><option value="intl">국제판 수록</option><option value="jp-only">일본판 전용</option><option value="upcoming">국제판 출시 예정</option></select></div>
       <div class="field"><label>최소 상수</label><input id="chuniMinDs" type="number" step="0.1" value="12.0"></div>
       <div class="field"><label>최대 상수</label><input id="chuniMaxDs" type="number" step="0.1" value="15.9"></div>
       <div class="field"><label>정렬</label><select id="chuniSort"><option value="ds-desc">상수 높은 순</option><option value="score-desc">점수 높은 순</option><option value="rating-desc">단곡 레이팅 순</option><option value="title">곡명 순</option></select></div>
@@ -247,7 +258,7 @@
       <div class="stat"><div class="k">평균 점수</div><div id="chuniStatAvg" class="v">—</div><div class="s">플레이 채보만</div></div>
       <div class="stat"><div class="k">현재 Rating</div><div id="chuniStatRating" class="v">—</div><div class="s">NET 우선</div></div>
     </div>
-    <div class="panel notice"><strong>CHUNITHM-NET 직접 수집:</strong> 로그인된 국제판 NET에서 BASIC~ULTIMA 최고점과 FC/AJ를 읽습니다. 세션 쿠키는 외부로 전송하거나 저장하지 않고, 북마클릿이 같은 CHUNITHM-NET 안에서 페이지를 읽은 뒤 텍스트만 복사합니다.<div class="source">상수/노트 데이터: OTOGE DB International · 점수: 사용자의 CHUNITHM-NET 세션 · 레이팅 계산: VERSE 이후 B30 + Current N20 구조</div></div>
+    <div class="panel notice"><strong>CHUNITHM-NET 직접 수집:</strong> 로그인된 국제판 NET에서 BASIC~ULTIMA 최고점과 FC/AJ를 읽습니다. 세션 쿠키는 외부로 전송하거나 저장하지 않고, 북마클릿이 같은 CHUNITHM-NET 안에서 페이지를 읽은 뒤 텍스트만 복사합니다.<div class="source">상수/노트 데이터: OTOGE DB 일본판+International 합본 · 판본 구분: 국제판 수록 데이터 · 점수: 사용자의 CHUNITHM-NET 세션 · 레이팅 계산: VERSE 이후 B30 + Current N20 구조</div></div>
     <main id="chuniContent"><div class="empty"><b>CHUNITHM 상수표를 불러오는 중…</b></div></main>
   </section>
   <section id="chuniViewSummary" class="chuniView"><div id="chuniSummary"></div></section>
@@ -356,8 +367,9 @@
 (() => {
   'use strict';
   const MUSIC_URL = 'https://raw.githubusercontent.com/zvuc/otoge-db/master/maimai/data/music-ex-intl.json';
+  const MUSIC_JP_URL = 'https://raw.githubusercontent.com/zvuc/otoge-db/master/maimai/data/music-ex.json';
   const COMMUNITY_URL = 'https://meta.salt.realtvop.top/meta.next.json';
-  const STORAGE_MUSIC = 'maimai-dxnet-tracker:charts:v1';
+  const STORAGE_MUSIC = 'maimai-dxnet-tracker:charts:v2';
   const STORAGE_SCORES = 'maimai-dxnet-tracker:scores:v2';
   const STORAGE_NOTES = 'maimai-dxnet-tracker:notes:v1';
   const STORAGE_HISTORY = 'maimai-dxnet-tracker:history:v1';
@@ -377,7 +389,7 @@
   let editingKey = null;
 
   const $ = id => document.getElementById(id);
-  const els = {content:$('content'),summary:$('summaryContent'),rating:$('ratingContent'),ranking:$('rankingContent'),analysis:$('analysisContent'),search:$('search'),genre:$('genre'),difficulty:$('difficulty'),status:$('statusFilter'),minDs:$('minDs'),maxDs:$('maxDs'),sort:$('sort'),compact:$('compact'),dot:$('apiDot'),apiStatus:$('apiStatus'),importDialog:$('importDialog'),editDialog:$('editDialog'),settingsDialog:$('settingsDialog')};
+  const els = {content:$('content'),summary:$('summaryContent'),rating:$('ratingContent'),ranking:$('rankingContent'),analysis:$('analysisContent'),search:$('search'),genre:$('genre'),difficulty:$('difficulty'),status:$('statusFilter'),region:$('regionFilter'),minDs:$('minDs'),maxDs:$('maxDs'),sort:$('sort'),compact:$('compact'),dot:$('apiDot'),apiStatus:$('apiStatus'),importDialog:$('importDialog'),editDialog:$('editDialog'),settingsDialog:$('settingsDialog')};
 
   function toast(msg,ms=2800){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),ms)}
   function setStatus(text,state=''){els.apiStatus.textContent=text;els.dot.className='dot '+state}
@@ -812,7 +824,7 @@
 
   function switchView(name){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===name));document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));const v=$('view'+name[0].toUpperCase()+name.slice(1));if(v)v.classList.add('active');if(name==='summary')renderSummary();else if(name==='rating')renderRating();else if(name==='ranking')renderRanking();else if(name==='analysis')renderAnalysis();else renderTable();window.scrollTo({top:0,behavior:'smooth'})}
   document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
-  ['search','genre','difficulty','statusFilter','minDs','maxDs','sort','compact'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',renderTable));
+  ['search','genre','difficulty','statusFilter','regionFilter','minDs','maxDs','sort','compact'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',renderTable));
   ['rankingDs','rankingDiff','rankingMode','rankingState'].forEach(id=>$(id).addEventListener('change',renderRanking));
   $('reloadMusic').addEventListener('click',()=>{loadMusic(true);loadCommunity(true)});$('openDxImport').addEventListener('click',openImport);$('closeImport').addEventListener('click',()=>els.importDialog.close());$('applyPaste').addEventListener('click',applyPaste);
   $('copyBookmarklet').addEventListener('click',async()=>{const ok=await copyText(BOOKMARKLET);if(!ok)selectBookmarklet();toast(ok?'북마클릿 URL을 복사했습니다. 기존 북마크 URL을 통째로 교체해 주세요.':'자동 복사가 차단되어 전체 URL을 선택해뒀습니다. Ctrl+C(모바일은 길게 눌러 복사) 해주세요.',5200)});
@@ -848,7 +860,8 @@
 'use strict';
 const $=id=>document.getElementById(id), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const CHUNI_MUSIC_URL='https://raw.githubusercontent.com/zvuc/otoge-db/master/chunithm/data/music-ex-intl.json';
-const CK_MUSIC='rhythm-hub:chuni:music:v1',CK_SCORES='rhythm-hub:chuni:scores:v1',CK_NOTES='rhythm-hub:chuni:notes:v1',CK_SETTINGS='rhythm-hub:chuni:settings:v1',CK_HISTORY='rhythm-hub:chuni:history:v1';
+const CHUNI_MUSIC_JP_URL='https://raw.githubusercontent.com/zvuc/otoge-db/master/chunithm/data/music-ex.json';
+const CK_MUSIC='rhythm-hub:chuni:music:v2',CK_SCORES='rhythm-hub:chuni:scores:v1',CK_NOTES='rhythm-hub:chuni:notes:v1',CK_SETTINGS='rhythm-hub:chuni:settings:v1',CK_HISTORY='rhythm-hub:chuni:history:v1';
 const VER_ORDER=['CHUNITHM','CHUNITHM+','AIR','AIR+','STAR','STAR+','AMAZON','AMAZON+','CRYSTAL','CRYSTAL+','PARADISE','PARADISE LOST','NEW','NEW+','SUN','SUN+','LUMINOUS','LUMINOUS+','VERSE','X-VERSE','XVERSE','X-VERSE-X'];
 const DIFFS=[['BAS','bas','BASIC'],['ADV','adv','ADVANCED'],['EXP','exp','EXPERT'],['MAS','mas','MASTER'],['ULT','ult','ULTIMA']];
 let chCharts=[], chScores=new Map(), chNotes=new Map(), chSettings={officialRating:null,playerName:'',playCount:null,lastImport:null}, chHistory=[], chEditing=null;
@@ -914,7 +927,7 @@ function updateHub(){try{let ms=JSON.parse(localStorage.getItem('maimai-dxnet-tr
 function switchGame(g){document.querySelectorAll('.gameShell').forEach(x=>x.classList.remove('active'));let id={home:'hubApp',maimai:'maimaiApp',chuni:'chuniApp',sdvx:'sdvxApp',taiko:'taikoApp'}[g]||'hubApp';$(id)?.classList.add('active');document.querySelectorAll('.gameBtn').forEach(b=>b.classList.toggle('active',b.dataset.game===g));localStorage.setItem('rhythm-hub:last-game',g);if(g==='home')updateHub();window.scrollTo({top:0,behavior:'instant'})}
 document.querySelectorAll('.gameBtn').forEach(b=>b.addEventListener('click',()=>switchGame(b.dataset.game)));document.querySelectorAll('.hubGo').forEach(b=>b.addEventListener('click',()=>switchGame(b.dataset.go)));
 document.querySelectorAll('.chuniTab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.chuniTab').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.chuniView').forEach(x=>x.classList.remove('active'));$('chuniView'+b.dataset.cview[0].toUpperCase()+b.dataset.cview.slice(1)).classList.add('active');chRender()}));
-['chuniSearch','chuniGenre','chuniDiff','chuniStatus','chuniMinDs','chuniMaxDs','chuniSort'].forEach(id=>$(id).addEventListener(id==='chuniSearch'?'input':'change',chRenderTable));$('openChuniImport').onclick=openChImport;$('closeChuniImport').onclick=()=>$('chuniImportDialog').close();$('copyChuniBookmarklet').onclick=()=>copyTextFrom('chuniBookmarklet');$('selectChuniBookmarklet').onclick=()=>{let t=$('chuniBookmarklet');t.focus();t.select();t.setSelectionRange(0,t.value.length)};$('openChuniNet').onclick=()=>window.open('https://chunithm-net-eng.com/mobile/home/','_blank','noopener');$('applyChuniPaste').onclick=()=>{try{let r=importChText($('chuniPaste').value);$('chuniImportResult').textContent=`${r.matched}개 기록 적용 · 미매칭 ${r.unmatched}개${r.rating!=null?' · Rating '+r.rating.toFixed(2):''}`}catch(e){$('chuniImportResult').textContent='가져오기 실패: '+e.message}};$('chuniReload').onclick=()=>loadChMusic(true);$('chuniExport').onclick=chExport;$('chuniBackupFile').addEventListener('change',async e=>{let f=e.target.files?.[0];if(!f)return;try{chRestoreBackup(JSON.parse(await f.text()));alert('CHUNITHM 백업을 불러왔습니다.')}catch(err){alert('백업 가져오기 실패: '+err.message)}e.target.value=''});$('chuniClear').onclick=()=>{if(confirm('CHUNITHM 저장 기록과 성장 기록을 초기화할까요? 목표곡/메모는 유지됩니다.')){chScores.clear();chHistory=[];chSettings.officialRating=null;localStorage.removeItem(CK_SCORES);localStorage.removeItem(CK_HISTORY);saveChSettings();chRender()}};$('chuniRandom').onclick=()=>{let a=chFiltered();if(!a.length)return;let c=a[Math.floor(Math.random()*a.length)];openChEdit(c.key)};$('chuniEditSave').onclick=saveChEdit;$('chuniEditCancel').onclick=()=>$('chuniEditDialog').close();$('chuniDeleteOne').onclick=()=>{if(chEditing){chScores.delete(chEditing);saveChScores();$('chuniEditDialog').close();chRender()}};
+['chuniSearch','chuniGenre','chuniDiff','chuniStatus','chuniRegion','chuniMinDs','chuniMaxDs','chuniSort'].forEach(id=>$(id).addEventListener(id==='chuniSearch'?'input':'change',chRenderTable));$('openChuniImport').onclick=openChImport;$('closeChuniImport').onclick=()=>$('chuniImportDialog').close();$('copyChuniBookmarklet').onclick=()=>copyTextFrom('chuniBookmarklet');$('selectChuniBookmarklet').onclick=()=>{let t=$('chuniBookmarklet');t.focus();t.select();t.setSelectionRange(0,t.value.length)};$('openChuniNet').onclick=()=>window.open('https://chunithm-net-eng.com/mobile/home/','_blank','noopener');$('applyChuniPaste').onclick=()=>{try{let r=importChText($('chuniPaste').value);$('chuniImportResult').textContent=`${r.matched}개 기록 적용 · 미매칭 ${r.unmatched}개${r.rating!=null?' · Rating '+r.rating.toFixed(2):''}`}catch(e){$('chuniImportResult').textContent='가져오기 실패: '+e.message}};$('chuniReload').onclick=()=>loadChMusic(true);$('chuniExport').onclick=chExport;$('chuniBackupFile').addEventListener('change',async e=>{let f=e.target.files?.[0];if(!f)return;try{chRestoreBackup(JSON.parse(await f.text()));alert('CHUNITHM 백업을 불러왔습니다.')}catch(err){alert('백업 가져오기 실패: '+err.message)}e.target.value=''});$('chuniClear').onclick=()=>{if(confirm('CHUNITHM 저장 기록과 성장 기록을 초기화할까요? 목표곡/메모는 유지됩니다.')){chScores.clear();chHistory=[];chSettings.officialRating=null;localStorage.removeItem(CK_SCORES);localStorage.removeItem(CK_HISTORY);saveChSettings();chRender()}};$('chuniRandom').onclick=()=>{let a=chFiltered();if(!a.length)return;let c=a[Math.floor(Math.random()*a.length)];openChEdit(c.key)};$('chuniEditSave').onclick=saveChEdit;$('chuniEditCancel').onclick=()=>$('chuniEditDialog').close();$('chuniDeleteOne').onclick=()=>{if(chEditing){chScores.delete(chEditing);saveChScores();$('chuniEditDialog').close();chRender()}};
 loadChLocal();loadChMusic(false);updateHub();let last=localStorage.getItem('rhythm-hub:last-game')||'maimai';switchGame(last);
 })();
 </script>
